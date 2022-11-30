@@ -7,20 +7,25 @@ extend({ OrbitControls: OrbitControls });
 export default function App() {
   const houseRef = useRef();
   const floor = useRef();
-  const { camera, gl } = useThree();
+  const { camera, gl, } = useThree();
+  gl.setClearColor("#262837")
 
   const bushGeometry = new THREE.SphereGeometry(1, 16, 16);
   const bushMaterial = new THREE.MeshStandardMaterial({ color: "#89c854" });
 
-  const graveGeometry = new THREE.BoxGeometry(0.6, 0.8, .2);
+  const graveGeometry = new THREE.BoxGeometry(0.6, 0.8, 0.2);
   const graveMaterial = new THREE.MeshStandardMaterial({ color: "#b2b6b1" });
 
   return (
     <>
+      {/* fog */}
+      <fog attach="fog" color="#262837" near={1} far={16} />
+      
+
       <orbitControls args={[camera, gl.domElement]} />
 
-      <directionalLight position={[3, 2, 6]} intensity={1.5} />
-      <ambientLight intensity={0.5} />
+      {/* <directionalLight position={[3, 2, 6]} intensity={1.5} /> */}
+      <ambientLight color="#b9d5ff" intensity={0.12} />
 
       <group ref={houseRef}>
         <mesh position-y={2.5 + 0.5} rotation-y={Math.PI * 0.25}>
@@ -39,6 +44,9 @@ export default function App() {
           <planeGeometry args={[2, 2]} />
           <meshStandardMaterial color="brown" />
         </mesh>
+
+        {/* door light */}
+        <pointLight args={["#ff7d46", 1, 7]} position={[0, 2.2, 2.7]} />
 
         {/* bushes */}
         <group>
@@ -67,29 +75,28 @@ export default function App() {
             scale={[0.2, 0.2, 0.2]}
           />
         </group>
+      </group>
+      {/* graves */}
+      <group>
+        {[...Array(50)].map((val, index) => {
+          const angle = Math.random() * Math.PI * 2;
+          const radius = Math.random() * 6 + 3;
+          const temp = Math.random() * Math.PI * 0.125;
+          const rot = temp - temp / 2;
+          const x = Math.sin(angle) * radius;
+          const z = Math.cos(angle) * radius;
 
-        {/* graves */}
-        <group>
-          {[...Array(50)].map((val, index) => {
-            const angle = Math.random() * Math.PI * 2;
-            const radius = Math.random() * 6 + 3;
-            const temp = Math.random() * Math.PI * .125
-            const rot = temp - (temp/2)
-            const x = Math.sin(angle) * radius;
-            const z = Math.cos(angle) * radius;
-
-            return (
-              <mesh
-                key={index}
-                position={[x, 0.3, z]}
-                material={graveMaterial}
-                geometry={graveGeometry}
-                rotation-y={rot}
-                rotation-z={rot}
-              />
-            );
-          })}
-        </group>
+          return (
+            <mesh
+              key={index}
+              position={[x, 0.3, z]}
+              material={graveMaterial}
+              geometry={graveGeometry}
+              rotation-y={rot}
+              rotation-z={rot}
+            />
+          );
+        })}
       </group>
     </>
   );
